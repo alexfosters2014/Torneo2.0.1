@@ -1,0 +1,67 @@
+﻿@inject DataServiceEquipo dataServiceEquipo;
+@inject IToastService toastService
+
+<div class="containerAddJugador">
+
+
+    <input type="text" @bind="nombreTorneo" class="buttonStyle" placeholder="Ingrese nombre del equipo">
+    <button @onclick="BuscarEquipo" class="buttonStyle">Buscar</button>
+
+
+    <table class="blueTable">
+    <tr style="align-content:center">
+        <td></td>
+        <td>Nombre de equipo</td>
+        <td>Apellidos</td>
+        <td></td>
+    </tr>
+    <tr>
+       
+        @if (equiposBuscados != null)
+        {
+                @foreach(var eq in equiposBuscados)
+                {
+                    <td><img src="@ActualizarLinkImagen(eq.Caratula)" alt="" class="imagenEnListada"></td>
+                    <td>@eq.NombreEquipo</td>
+                    <td><button class="buttonStyle" @onclick="() => ElegirEquipo(eq.Id)">Seleccionar</button></td>
+                }
+        }
+       
+    </tr>
+</table>
+</div>
+
+
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    private Equipo equipoAsignado = new();
+    private List<Equipo> equiposBuscados = new();
+
+    private string nombreTorneo = "";
+
+    async Task BuscarEquipo()
+    {
+        try
+        {
+            equiposBuscados = await dataServiceEquipo.GetsEquiposPorNombre(nombreTorneo);
+
+        }catch (Exception ex)
+        {
+            toastService.ShowWarning(ex.Message);
+        }
+    }
+
+    private async Task ElegirEquipo(int id) => await BlazoredModal.CloseAsync(ModalResult.Ok(equiposBuscados.SingleOrDefault(s => s.Id == id)));
+
+    private string ActualizarLinkImagen(string caratula)
+    {
+       return $"https://torneostorage.blob.core.windows.net/imagenesequipos/{caratula}";
+
+    }
+
+    private async Task Cerrar() => await BlazoredModal.CancelAsync();
+
+    }

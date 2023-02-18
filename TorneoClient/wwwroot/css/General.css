@@ -1,0 +1,84 @@
+﻿
+
+.buttonStyle {
+    padding: 12px;
+    background-color: cornflowerblue;
+    color: white;
+    border: transparent;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.buttonStyle:hover {
+    opacity: 0.8;
+}
+
+
+input:focus,
+select {
+    border-color: cornflowerblue;
+    box-shadow: 0 1px 1px rgba(229, 103, 23, 0.075) inset, 0 0 8px cornflowerblue;
+    outline: 0 none;
+}
+
+input,
+select {
+    padding: 5px 5px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    border: 2px solid cornflowerblue;
+    margin: 0;
+}
+
+/* para Tabla General*/
+
+table.blueTable {
+    border: 1px solid #1C6EA4;
+    background-color: #EEEEEE;
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+}
+
+table.blueTable td, table.blueTable th {
+    border: 1px solid #AAAAAA;
+    padding: 5px 10px;
+}
+
+table.blueTable tbody td {
+    font-size: 12px;
+}
+
+table.blueTable tr:nth-child(even) {
+    background: #D0E4F5;
+}
+
+table.blueTable thead {
+    background: #1C6EA4;
+    background: -moz-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+    background: -webkit-linear-gradient(top, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+    background: linear-gradient(to bottom, #5592bb 0%, #327cad 66%, #1C6EA4 100%);
+    border-bottom: 2px solid #444444;
+}
+
+table.blueTable thead th {
+    font-size: 14px;
+    font-weight: bold;
+    color: #FFFFFF;
+    border-left: 2px solid #D0E4F5;
+    }
+
+    table.blueTable thead th:first-child {
+        border-left: none;
+    }
+
+    table.blueTable tfoot {
+        font-weight: bold;
+    }
+
+.imagenEnListada{
+    height: 60px;
+    height: 60px;
+    border-radius:5px;
+    border: 4px solid white;
+}

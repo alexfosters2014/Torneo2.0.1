@@ -1,0 +1,90 @@
+.tarjetaEquipoContainer{
+    box-shadow: 3px 3px 12px #3D1919;
+    margin: 10px auto;
+    width: 70vw;
+    padding:3.5vw;
+    border-radius: 50px;
+}
+
+.Avatar{
+    box-shadow: 3px 3px 12px #3D1919;
+    width: 10vw;
+    height: 10vw;
+    padding: 2px;
+    border-radius: 50px;
+}
+.Avatar img{
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    border:0px;
+    border-style:none;
+}
+
+.tarjetaEquipoContainer table{
+    margin: -10% 0 0 25%;
+}
+
+
+.tarjetaEquipoContainer td{
+    padding: 8px 12px;
+    font-size: 1.5rem;
+    border-radius: 10px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+    position: relative;
+    left: 90%;
+    bottom: 10%;
+    border: none;
+    display: inline-block;
+    padding: 1.2vw;
+    cursor: pointer;
+    background-image: url("../img/componentes/upload.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.9;
+}
+.custom-file-upload:hover{
+    opacity: 0.7;
+}
+
+.tarjetaEquipoContainer tr:first-child {
+    border:none;
+}
+
+.tarjetaEquipoContainer tr{
+    border-bottom: 1px solid red;
+}
+.tarjetaEquipoContainer tr td{
+    font-size: 1rem;
+}
+
+.alturaEspecificaEquipo_tr {
+    height:4vw;
+}
+.flexCenterBox{
+   display:flex;
+   justify-content:center;
+   align-items:center;
+   margin-top:2vw;
+}
+.botonMediano{
+    height:50px;
+    width:50px;
+}
+
+.botonMediano:hover {
+    opacity:0.7;
+    cursor:pointer;
+}
+
+.containerAddJugador{
+    border:1px solid black;
+    height:15vw;
+    width:70vw;
+}

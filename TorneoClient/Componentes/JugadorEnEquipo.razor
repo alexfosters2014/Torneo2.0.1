@@ -1,0 +1,26 @@
+﻿
+@if (!string.IsNullOrEmpty(Cedula))
+{
+    <tr style="height: 50px;">
+        <td>@Cedula</td>
+        <td>@NombreCompleto()</td>
+        <td>
+            <button>+</button>
+
+        </td>
+    </tr>
+}
+
+@code {
+    [Parameter]
+    public string Cedula { get; set; }
+    [Parameter]
+    public string Nombre { get; set; }
+    [Parameter]
+    public string Apellido { get; set; }
+
+    private string NombreCompleto()
+    {
+        return Nombre + " " + Apellido;
+    }
+}

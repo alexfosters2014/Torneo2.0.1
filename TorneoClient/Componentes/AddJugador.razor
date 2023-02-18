@@ -1,0 +1,90 @@
+﻿@inject DataServiceJugador dataServiceJugador;
+@inject IToastService toastService
+
+<div class="containerAddJugador">
+
+
+    <input type="number" @bind="Cedula" class="buttonStyle" placeholder="Ingrese una cedula">
+    <button @onclick="BuscarJugador" class="buttonStyle">Buscar</button>
+
+
+    <table class="blueTable">
+    <tr style="align-content:center">
+        <td>Cedula</td>
+        <td>Nombres</td>
+        <td>Apellidos</td>
+        <td>Fecha de Nacimiento</td>
+        <td></td>
+    </tr>
+    <tr>
+       
+        @if (existeJugador)
+        {
+            <td>@JugadorAsignado.Cedula</td>
+            <td>@JugadorAsignado.Nombres</td>
+            <td>@JugadorAsignado.Apellidos</td>
+            <td>@JugadorAsignado.FechaNacimiento.ToString("dd/MM/yyyy")</td>
+            <td><button class="buttonStyle" @onclick="AsignarAEquipo">Agregar</button></td>
+        }
+
+        @if (!existeJugador)
+        {
+            <td><input type="text" @bind="JugadorAsignado.Cedula"></td>
+            <td><input type="text" @bind="JugadorAsignado.Nombres"></td>
+            <td><input type="text" @bind="JugadorAsignado.Apellidos"></td>
+                <td><input type="date" @bind="JugadorAsignado.FechaNacimiento"></td>
+            <td><button class="buttonStyle" @onclick="CrearNuevo">Crear y agregar</button></td>
+        }
+       
+    </tr>
+</table>
+</div>
+
+
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    public Jugador JugadorAsignado { get; set; } = new();
+    private string Cedula = "";
+
+    bool existeJugador = false;
+
+    async Task CrearNuevo()
+    {
+        try
+        {
+            int jugadorId = await dataServiceJugador.NuevoJugador(JugadorAsignado);
+
+            JugadorAsignado.Id = jugadorId;
+
+            await AsignarAEquipo();
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.Message);
+        }
+
+       
+    }
+
+    async Task BuscarJugador()
+    {
+        try
+        {
+            JugadorAsignado = await dataServiceJugador.GetJugador(Cedula);
+            existeJugador = true;
+
+        }catch (Exception ex)
+        {
+            existeJugador = false;
+            JugadorAsignado = new();
+            toastService.ShowWarning(ex.Message);
+        }
+    }
+
+    private async Task AsignarAEquipo() =>  await BlazoredModal.CloseAsync(ModalResult.Ok(JugadorAsignado));
+
+    private async Task Cerrar() => await BlazoredModal.CancelAsync();
+}

@@ -1,0 +1,114 @@
+﻿@page "/inscripcion"
+
+@inject DataServiceInscripcion dataServiceInscripcion;
+@inject DataServiceEquipo dataServiceEquipo;
+@inject IToastService toast;
+
+
+<div class="tarjetaEquipoContainer">
+    
+    <table>
+        <tr>
+            <td>Selecciona tu equipo</td>
+            <td>@equipo.NombreEquipo</td>
+            <td><button @onclick="ShowBuscadorEquipo">Buscar</button></td>
+        </tr>
+
+        <tr class="alturaEspecificaEquipo_tr"></tr>
+        <tr>
+            <td>Selecciona el torneo</td>
+            <td colspan="3"></td>
+        </tr>
+            <td colspan="2" style="width:10vw">
+                    <select @onchange="CambioTorneo">
+                               <option value="0" selected>Seleccionar un torneo</option>
+                            @foreach (var torneo in torneosParaInscripcion)
+                            {
+                               <option value="@torneo.Id">@torneo.Nombre</option>
+                            }
+                    </select>
+            </td>
+    </table>
+
+</div>
+
+<div class="flexCenterBox">
+    <button class="buttonStyle" @onclick="Inscribir">Inscribir mi equipo</button>
+
+</div>
+
+
+@code {
+
+    [CascadingParameter] IModalService Modal { get; set; } = default!;
+
+    List<ViewModelTorneos> torneosParaInscripcion = new();
+
+    ViewModelTorneos torneo = new();
+    Equipo equipo =new();
+
+
+    private async Task ShowBuscadorEquipo()
+    {
+
+        var buscadorEquipoModal = Modal.Show<BuscadorEquipoInscripcion>();
+
+        var result = await buscadorEquipoModal.Result;
+
+        if (result.Confirmed)
+        {
+            equipo = (Equipo)result.Data;
+            await ActualizarListaTorneos(equipo.Deporte);
+        }
+    }
+
+    private async Task ActualizarListaTorneos(string deporte)
+    {
+        try
+        {
+            torneosParaInscripcion = await dataServiceInscripcion.GetTorneosSegunDeporte(deporte);
+            // StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            toast.ShowError(ex.Message);
+        }
+
+    }
+
+    void CambioTorneo(ChangeEventArgs e)
+    {
+        int torneoSeleccionadoId = Int32.Parse(e.Value.ToString());
+
+        torneo = torneosParaInscripcion.SingleOrDefault(s => s.Id == torneoSeleccionadoId);
+    }
+
+    private async Task Inscribir()
+    {
+        try
+        {
+            if (torneo  != null & equipo != null)
+            {
+                ViewModelInscripcion vw = new()
+                    {
+                        TorneoId = torneo.Id,
+                        NombreTorneo = torneo.Nombre,
+                        EquipoAInscribir = equipo
+            };
+
+            string resultado = await dataServiceInscripcion.NuevaInscripcionATorneo(vw);
+                toast.ShowSuccess(resultado);
+            }
+            else
+            {
+                toast.ShowInfo("Falta Seleccionar algunos items");
+            }
+        }
+        catch (Exception ex)
+        {
+            toast.ShowError(ex.Message);
+        }
+    }
+
+}
+

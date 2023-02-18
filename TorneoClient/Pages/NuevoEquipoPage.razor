@@ -1,0 +1,157 @@
+﻿@page "/nuevo/equipo"
+@inject DataServiceImagen dataServiceImagen;
+@inject DataServiceEquipo dataServiceEquipo;
+@inject IToastService toast;
+
+
+ <div class="tarjetaEquipoContainer">
+            <div class="Avatar">
+                 <img src="@ActualizarLinkImagen()" alt="">
+                <label for="file-upload" class="custom-file-upload"></label>
+                <InputFile OnChange="@CambioImagenFile" accept="image/*" id="file-upload" />
+            </div>
+
+              <table>
+                <tr>
+            <td style="width:10vw">Nombre de Equipo</td>
+                    <td colspan="2"><input type="text" @bind="Equipo.NombreEquipo"></td>
+                </tr>
+        <tr>
+            <td>Tipo Torneo</td>
+            <td colspan="2" style="width:10vw">
+                <select @onchange="CambioDeporte">
+                        <option value="0" selected>Seleccionar un tipo de torneo</option>
+                    @foreach (string key in Diccionarios.TipoTorneo.Keys)
+                    {
+                        <option value="@key">@key</option>
+                    }
+                </select>
+             </td>
+        </tr>
+
+        <tr class="alturaEspecificaEquipo_tr"></tr>
+                <tr>
+                    <td>Jugadores</td>
+                    <td colspan="3"></td>
+                </tr>
+        @foreach (var item in Equipo.Jugadores)
+        {
+            <JugadorEnEquipo Cedula="@item.Cedula" Nombre="@item.Nombres" Apellido="@item.Apellidos" />
+        }
+
+            </table>
+      
+ </div>
+
+<div class="flexCenterBox">
+    <img src="/img/componentes/add.png" alt="" class="botonMediano" @onclick="ShowJugador" />
+</div>
+
+<div class="flexCenterBox">
+    <button class="buttonStyle" @onclick="CrearEquipo">Crear Equipo</button>
+
+</div>
+
+
+@code {
+
+    [CascadingParameter] IModalService Modal { get; set; } = default!;
+
+    Equipo Equipo = new();
+    int limiteJugadores = 0;
+
+    bool VisualizarAgregarJugador = false;
+
+    private async Task CrearEquipo()
+    {
+        try
+        {
+            int resultado = await dataServiceEquipo.NuevoEquipo(Equipo);
+            if (resultado > 0)
+            {
+                Equipo.Id = resultado;
+                toast.ShowSuccess("Equipo creado correctamente");
+            }
+            else
+            {
+                toast.ShowError("No se pudo crear el equipo");
+            }
+        }
+        catch (Exception ex)
+        {
+            toast.ShowError(ex.Message);
+        }
+
+    }
+
+    private async Task ShowJugador()
+    {
+        if (Equipo.Jugadores.Count >= limiteJugadores)
+        {
+            toast.ShowWarning("Ya ha alcanzado el máximo de jugadores en el equipo");
+            return;
+        }
+
+        var jugadorModal = Modal.Show<AddJugador>();
+
+        var result = await jugadorModal.Result;
+
+        if (result.Confirmed)
+        {
+            var jugador = (Jugador)result.Data;
+            await AgregarJugador(jugador);
+        }
+    }
+
+    private async Task AgregarJugador(Jugador jugadorAsignado)
+    {
+        VisualizarAgregarJugador = false;
+        if (jugadorAsignado != null)
+        {
+            int repetido = Equipo.Jugadores.Count(c => c.Id == jugadorAsignado.Id);
+            if (repetido == 0)
+            {
+                Equipo.Jugadores.Add(jugadorAsignado);
+            }
+            else
+            {
+                toast.ShowWarning("El jugador está repetido");
+            }
+
+        }
+    }
+
+    private async Task CambioImagenFile(InputFileChangeEventArgs e)
+    {
+        try{
+            Equipo.Caratula = string.IsNullOrEmpty(Equipo.Caratula) ? await dataServiceImagen.SubirImagenFile(e) :
+                                                                      await dataServiceImagen.ActualizarImagenFile(e, Equipo.Caratula);
+
+            StateHasChanged();
+
+        }
+        catch (Exception ex)
+        {
+            toast.ShowError(ex.Message);
+        }
+    }
+
+    private string ActualizarLinkImagen()
+    {
+        string linkImagen = !string.IsNullOrEmpty(Equipo.Caratula) ?
+                                                $"https://torneostorage.blob.core.windows.net/imagenesequipos/{Equipo.Caratula}" :
+                                                Equipo.Caratula;
+
+        return linkImagen;
+    }
+
+    void CambioDeporte(ChangeEventArgs e)
+    {
+        string deporteSeleccionado = e.Value.ToString();
+        Equipo.Deporte = deporteSeleccionado;
+        limiteJugadores = Diccionarios.TipoTorneo[deporteSeleccionado];
+    }
+
+   
+
+}

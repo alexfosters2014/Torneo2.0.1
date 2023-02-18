@@ -1,0 +1,22 @@
+﻿@inject NavigationManager nav
+
+<a href="" @onclick="IraLink" @onclick:preventDefault>
+    <section class="CssTorneoBox">
+        <p>@Titulo</p>
+         <img src="/img/torneoseleccion/@(ImagenNombre).png" />
+    </section>
+</a>
+
+@code {
+    [Parameter]
+    public string Titulo { get; set; }
+    [Parameter]
+    public string ImagenNombre { get; set; }
+    [Parameter]
+    public string Modalidad { get; set; }
+
+    void IraLink()
+    {
+        nav.NavigateTo($"/CrearTorneo/Crear/{Titulo}/{Modalidad}");
+    }
+}

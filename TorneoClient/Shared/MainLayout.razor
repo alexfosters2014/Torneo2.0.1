@@ -1,0 +1,26 @@
+﻿@using Blazored.Toast.Configuration;
+@inherits LayoutComponentBase
+
+<div class="headerMenu">
+    <NavMenu />
+   
+</div>
+<div style="height:50px;width:auto">
+</div>  
+
+       
+
+    <main>
+      
+        <article class="myBody px-4">
+            @Body
+        </article>
+    </main>
+
+
+
+<BlazoredToasts Position="ToastPosition.TopCenter"
+                IconType="IconType.FontAwesome"
+                SuccessClass="success-toast-override"
+                SuccessIcon="fa fa-thumbs-up"
+                ErrorIcon="fa fa-bug" />

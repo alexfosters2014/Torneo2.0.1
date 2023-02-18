@@ -1,0 +1,122 @@
+﻿@page "/CrearTorneo/Crear/{Titulo}/{Modalidad}"
+@inject DataServiceImagen dataServiceImagen;
+@inject DataServiceTorneo dataServiceTorneo;
+@inject IToastService toast;
+
+<h3>@Titulo</h3>
+
+<div class="tarjetaEquipoContainer">
+    <div class="Avatar">
+        <img src="@ActualizarLinkImagen()" alt="">
+        <label for="file-upload" class="custom-file-upload"></label>
+        <InputFile OnChange="@CambioImagenFile" accept="image/*" id="file-upload" />
+    </div>
+
+    <table>
+        <tr>
+            <td style="width:10vw">Nombre del Torneo</td>
+            <td colspan="2"><input type="text" @bind="torneo.Nombre"></td>
+        </tr>
+        <tr>
+            <td>Deporte</td>
+            <td colspan="2" style="width:10vw">
+                <select @bind="torneo.Deporte">
+                    <option value="0" selected>Seleccionar un tipo de torneo</option>
+                    @foreach (string key in Diccionarios.TipoTorneo.Keys)
+                    {
+                        <option value="@key">@key</option>
+                    }
+                </select>
+            </td>
+        </tr>
+
+       <tr>
+           <td>Desde</td>
+           <td><input type="date" @bind="torneo.Desde"/></td>
+       </tr>
+
+        <tr>
+            <td>Hasta</td>
+            <td><input type="date" @bind="torneo.Hasta" /></td>
+        </tr>
+
+        <tr>
+            <td>Sets máximos</td>
+            <td><input type="number" @bind="torneo.SetsMax" /></td>
+        </tr>
+
+        <tr>
+            <td>Puntaje máximo por set</td>
+            <td><input type="number" @bind="torneo.PuntajeMax" /></td>
+        </tr>
+
+    </table>
+
+
+    <div class="flexCenterBox">
+        <button class="buttonStyle" @onclick="CrearTorneo">Crear Torneo</button>
+    </div>
+
+
+</div>
+
+
+@code {
+    [Parameter]
+    public string Modalidad { get; set; }
+
+    [Parameter]
+    public string Titulo { get; set; }
+
+    Torneo torneo = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        torneo.Modalidad = Modalidad;
+        torneo.Desde = DateTime.Today;
+        torneo.Hasta = DateTime.Today;
+    }
+
+
+    private async Task CambioImagenFile(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            torneo.ImagenRef = string.IsNullOrEmpty(torneo.ImagenRef) ? await dataServiceImagen.SubirImagenFile(e) :
+                                                                      await dataServiceImagen.ActualizarImagenFile(e, torneo.ImagenRef);
+            StateHasChanged();
+
+        }
+        catch (Exception ex)
+        {
+            toast.ShowError(ex.Message);
+        }
+    }
+
+    private string ActualizarLinkImagen()
+    {
+        string linkImagen = !string.IsNullOrEmpty(torneo.ImagenRef) ?
+                                                $"https://torneostorage.blob.core.windows.net/imagenesequipos/{torneo.ImagenRef}" :
+                                                torneo.ImagenRef;
+
+        return linkImagen;
+    }
+
+    private async Task CrearTorneo()
+    {
+        try
+        {
+            int torneoId = await dataServiceTorneo.CrearTorneo(torneo);
+            if (torneoId < 1) throw new Exception("No se ha podido guardar el torneo seleccionado");
+
+            torneo.Id = torneoId;
+
+            toast.ShowSuccess("Se ha creado con éxito el torneo");
+        }
+        catch (Exception ex)
+        {
+            toast.ShowError(ex.Message);
+        }
+    }
+
+}

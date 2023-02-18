@@ -1,0 +1,85 @@
+﻿@page "/administrar/torneos"
+@inject DataServiceTorneo dataServiceTorneo
+
+<h3>Administrar Torneos</h3>
+
+<div class="containerAddJugador">
+    @if (torneos == null)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        <table class="blueTable">
+            <tr style="align-content:center">
+                <td></td>
+                <td>Nombre Torneo</td>
+                <td>Desde</td>
+                <td>Hasta</td>
+                <td>Deporte</td>
+                <td>Cantidad inscriptos</td>
+                <td>Puntaje Max</td>
+                <td>Sets Max</td>
+                <td></td>
+            </tr>
+            <tr>
+
+                @if (torneos.Count == 0)
+                {
+                    <p>No hay torneos con el nombre especificado</p>
+                }
+                else
+            {
+                    @foreach (var torneo in torneos)
+                {
+                    <td><img src="@ActualizarLinkImagen(torneo.ImagenRef)" alt="" class="imagenEnListada"></td>
+                    <td>@torneo.Nombre</td>
+                    <td>@torneo.Desde.ToString("dd/MM/yyyy")</td>
+                    <td>@torneo.Hasta.ToString("dd/MM/yyyy")</td>
+                    <td>@torneo.Deporte</td>
+                    <td>@torneo.Inscripciones.Count</td>
+                    <td>@torneo.PuntajeMax</td>
+                    <td>@torneo.SetsMax</td>
+                    <td><button class="buttonStyle" @onclick="() => AutomatizarFixture(torneo.Id)">Crear Fixture automático</button></td>
+                }
+                }
+
+            </tr>
+        </table>
+    }
+    
+</div>
+
+@code {
+
+    private string nombreTorneo = "";
+    private List<ViewModelTorneos> torneos = null;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await GetTorneos();
+    }
+
+    private async Task GetTorneos()
+    {
+        torneos = await dataServiceTorneo.GetTorneosVigentes();
+        StateHasChanged();
+    }
+
+    private string ActualizarLinkImagen(string imagenRef)
+    {
+        return $"https://torneostorage.blob.core.windows.net/imagenesequipos/{imagenRef}";
+
+    }
+
+    private async Task AutomatizarFixture(int torneoId)
+    {
+        ViewModelTorneos torneoFixture = torneos.SingleOrDefault(s => s.Id == torneoId);
+        torneoFixture.Fixture = dataServiceTorneo.CrearFixtureAut(torneoFixture);
+        //falta guardar el fixture en la base de datos
+
+    }
+
+
+
+}

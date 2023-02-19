@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ViewModels
 {
-    public class ViewModelTorneos
+    public class ViewModelTorneo
     {
         public int Id { get; set; }
         public string Nombre { get; set; }

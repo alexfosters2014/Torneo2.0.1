@@ -22,10 +22,10 @@ namespace Negocio
             _db = db;
         }
 
-        public async Task<List<ViewModelTorneos>> GetTorneosDeporteInscripcion(string deporte)
+        public async Task<List<ViewModelTorneo>> GetTorneosDeporteInscripcion(string deporte)
         {
             return await _db.Torneos.Where(t => t.Deporte == deporte)
-                              .Select(s => new ViewModelTorneos()
+                              .Select(s => new ViewModelTorneo()
                               {
                                     Id = s.Id,
                                     Nombre= s.Nombre,
@@ -35,10 +35,10 @@ namespace Negocio
 
         }
 
-        public async Task<List<ViewModelTorneos>> GetTorneosVigentes()
+        public async Task<List<ViewModelTorneo>> GetTorneosVigentes()
         {
             var torneos = await _db.Torneos.Where(w => w.Desde >= DateTime.Today)
-                                     .Select(s => new ViewModelTorneos()
+                                     .Select(s => new ViewModelTorneo()
                                      {
                                          Id = s.Id,
                                          Nombre = s.Nombre,

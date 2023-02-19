@@ -15,7 +15,7 @@ namespace TorneoClient.DataService
             this._httpClient = _httpClient;
         }
 
-        public async Task<List<ViewModelTorneos>> GetTorneosSegunDeporte(string deporte)
+        public async Task<List<ViewModelTorneo>> GetTorneosSegunDeporte(string deporte)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace TorneoClient.DataService
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
-                var resultado = JsonConvert.DeserializeObject<List<ViewModelTorneos>>(content, new JsonSerializerSettings()
+                var resultado = JsonConvert.DeserializeObject<List<ViewModelTorneo>>(content, new JsonSerializerSettings()
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                 });

@@ -40,7 +40,7 @@ namespace TorneoClient.DataService
             }
         }
 
-        public List<PartidoVM> CrearFixtureAut(ViewModelTorneos torneo)
+        public List<PartidoVM> CrearFixtureAut(ViewModelTorneo torneo)
         {
             List<PartidoVM> partidos = new();
 
@@ -57,7 +57,7 @@ namespace TorneoClient.DataService
             return partidos;
         }
 
-        private List<PartidoVM> CrearFixtureEliminacionDirecta(ViewModelTorneos torneo)
+        private List<PartidoVM> CrearFixtureEliminacionDirecta(ViewModelTorneo torneo)
         {
             List<PartidoVM> fixture = new();
 
@@ -186,7 +186,7 @@ namespace TorneoClient.DataService
 
         }
 
-        public async Task<List<ViewModelTorneos>> GetTorneosVigentes()
+        public async Task<List<ViewModelTorneo>> GetTorneosVigentes()
         {
             try
             {
@@ -199,7 +199,7 @@ namespace TorneoClient.DataService
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
-                var resultado = JsonConvert.DeserializeObject<List<ViewModelTorneos>>(content);
+                var resultado = JsonConvert.DeserializeObject<List<ViewModelTorneo>>(content);
                 return resultado;
 
             }

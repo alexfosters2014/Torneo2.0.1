@@ -18,7 +18,8 @@ img {
     width: 40vw;
     grid-template-areas: "visitante puntosv medio puntosl local"
         "separador separador separador separador separador"
-        "marcadorv sets sets sets marcadorl";
+        "marcadorv sets sets sets marcadorl"
+        "pie pie pie pie pie";
 }
 
     .gridContainer p {
@@ -64,6 +65,12 @@ img {
 
 .marcL {
     grid-area: marcadorl;
+}
+
+.pie {
+    grid-area: pie;
+    text-align: center;
+    color: orangered;
 }
 
 .tamanioPuntaje {

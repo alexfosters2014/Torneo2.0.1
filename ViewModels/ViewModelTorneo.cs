@@ -45,7 +45,9 @@ namespace ViewModels
         public int MarcadorVisitante { get; set; }
         public int SetsGanadosLocal { get; set; }
         public int SetsGanadosVisitante { get; set; }
-        public int SetActual { get; set; }
+        public int SetActual { get; set; } = 1;
+        public int PuntajeLocal { get; set; }
+        public int PuntajeVisitante { get; set; }
         public Guid PartidoSiguienteGuid { get; set; }
         public string NombreCancha { get; set; }
         public DateTime Fecha { get; set; }

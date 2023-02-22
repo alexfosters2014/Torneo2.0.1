@@ -14,5 +14,8 @@ namespace Util
             {"FUTBOL",11}
         };
 
+        public static readonly string LOCAL = "LOCAL";
+        public static readonly string VISITANTE = "VISITANTE";
+
     }
 }

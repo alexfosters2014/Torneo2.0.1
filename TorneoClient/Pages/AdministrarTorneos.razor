@@ -62,7 +62,9 @@
         {
             @foreach (var partido in torneoSeleccionado.Fixture)
             {
-            <PartidoMarcador Partido="partido" />
+            <PartidoMarcador Partido="partido" 
+                             PuntajeMax="torneoSeleccionado.PuntajeMax" 
+                             SetsMax="torneoSeleccionado.SetsMax" />
             }
         }
         else

@@ -17,6 +17,8 @@ namespace Entidades
         public int SetsGanadosLocal { get; set; }
         public int SetsGanadosVisitante { get; set; }
         public int SetActual { get; set; }
+        public int PuntajeLocal { get; set; }
+        public int PuntajeVisitante { get; set; }
         public Guid PartidoSiguienteGuid { get; set; }
         public Torneo Torneo { get; set; } = new();
         public string NombreCancha { get; set; }

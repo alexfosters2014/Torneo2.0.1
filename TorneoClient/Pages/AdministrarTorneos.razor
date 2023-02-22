@@ -3,57 +3,84 @@
 
 <h3>Administrar Torneos</h3>
 
-<div class="containerAddJugador">
-    @if (torneos == null)
+
+    @if (!modoEditor)
     {
-        <p>Cargando...</p>
+        @if (torneos == null)
+        {
+            <p>Cargando...</p>
+        }
+        else
+        {
+     <div class="containerAddJugador">
+            <table class="blueTable">
+                <tr style="align-content:center">
+                    <td></td>
+                    <td>Nombre Torneo</td>
+                    <td>Desde</td>
+                    <td>Hasta</td>
+                    <td>Deporte</td>
+                    <td>Cantidad inscriptos</td>
+                    <td>Puntaje Max</td>
+                    <td>Sets Max</td>
+                    <td></td>
+                </tr>
+                <tr>
+
+                    @if (torneos.Count == 0)
+                    {
+                        <p>No hay torneos con el nombre especificado</p>
+                    }
+                    else
+                    {
+                        @foreach (var torneo in torneos)
+                        {
+                            <td><img src="@ActualizarLinkImagen(torneo.ImagenRef)" alt="" class="imagenEnListada"></td>
+                            <td>@torneo.Nombre</td>
+                            <td>@torneo.Desde.ToString("dd/MM/yyyy")</td>
+                            <td>@torneo.Hasta.ToString("dd/MM/yyyy")</td>
+                            <td>@torneo.Deporte</td>
+                            <td>@torneo.Inscripciones.Count</td>
+                            <td>@torneo.PuntajeMax</td>
+                            <td>@torneo.SetsMax</td>
+                            <td><button class="buttonStyle" @onclick="() => SeleccionarTorneo(torneo.Id)">Administrar</button></td>
+                        }
+                    }
+
+                </tr>
+            </table>
+                
+        </div>
+        }
     }
     else
     {
-        <table class="blueTable">
-            <tr style="align-content:center">
-                <td></td>
-                <td>Nombre Torneo</td>
-                <td>Desde</td>
-                <td>Hasta</td>
-                <td>Deporte</td>
-                <td>Cantidad inscriptos</td>
-                <td>Puntaje Max</td>
-                <td>Sets Max</td>
-                <td></td>
-            </tr>
-            <tr>
+        <button class="buttonStyle" @onclick="() => AutomatizarFixture()">Crear Fixture automático</button>
+        <button class="buttonStyle" >Crear grupo de marcadores de partido</button>
 
-                @if (torneos.Count == 0)
-                {
-                    <p>No hay torneos con el nombre especificado</p>
-                }
-                else
+        @if (torneoSeleccionado != null && torneoSeleccionado.Fixture.Count > 0)
+        {
+            @foreach (var partido in torneoSeleccionado.Fixture)
             {
-                    @foreach (var torneo in torneos)
-                {
-                    <td><img src="@ActualizarLinkImagen(torneo.ImagenRef)" alt="" class="imagenEnListada"></td>
-                    <td>@torneo.Nombre</td>
-                    <td>@torneo.Desde.ToString("dd/MM/yyyy")</td>
-                    <td>@torneo.Hasta.ToString("dd/MM/yyyy")</td>
-                    <td>@torneo.Deporte</td>
-                    <td>@torneo.Inscripciones.Count</td>
-                    <td>@torneo.PuntajeMax</td>
-                    <td>@torneo.SetsMax</td>
-                    <td><button class="buttonStyle" @onclick="() => AutomatizarFixture(torneo.Id)">Crear Fixture automático</button></td>
-                }
-                }
-
-            </tr>
-        </table>
+            <PartidoMarcador Partido="partido" 
+                             PuntajeMax="torneoSeleccionado.PuntajeMax" 
+                             SetsMax="torneoSeleccionado.SetsMax" />
+            }
+        }
+        else
+        {
+          <p>No hay torneo seleccionado</p>
+        }
     }
-    
-</div>
+   
+
 
 @code {
 
     private string nombreTorneo = "";
-    private List<ViewModelTorneos> torneos = null;
+    private List<ViewModelTorneo> torneos = null;
+    private bool modoEditor = false;
+    private ViewModelTorneo torneoSeleccionado = null;
 
     protected async override Task OnInitializedAsync()
     {
@@ -72,14 +99,21 @@
 
     }
 
-    private async Task AutomatizarFixture(int torneoId)
+    private async Task AutomatizarFixture()
     {
-        ViewModelTorneos torneoFixture = torneos.SingleOrDefault(s => s.Id == torneoId);
-        torneoFixture.Fixture = dataServiceTorneo.CrearFixtureAut(torneoFixture);
+        torneoSeleccionado.Fixture = dataServiceTorneo.CrearFixtureAut(torneoSeleccionado);
+        //torneoSeleccionado.Fixture = torneoSeleccionado.Fixture.OrderBy(o => o.Ronda).ToList();
         //falta guardar el fixture en la base de datos
 
     }
 
+    void CambioEditor() => modoEditor = !modoEditor;
+
+    void SeleccionarTorneo(int idTorneo)
+    {
+        torneoSeleccionado = torneos.SingleOrDefault(s => s.Id == idTorneo);
+        CambioEditor();
+    }
 
 
 }

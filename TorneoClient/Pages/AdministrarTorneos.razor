@@ -22,6 +22,7 @@
                     <td>Deporte</td>
                     <td>Cantidad inscriptos</td>
                     <td>Puntaje Max</td>
+                    <td>Puntaje Max último set</td>
                     <td>Sets Max</td>
                     <td></td>
                 </tr>
@@ -42,6 +43,7 @@
                             <td>@torneo.Deporte</td>
                             <td>@torneo.Inscripciones.Count</td>
                             <td>@torneo.PuntajeMax</td>
+                            <td>@torneo.PuntajeMaxDefinitorio</td>
                             <td>@torneo.SetsMax</td>
                             <td><button class="buttonStyle" @onclick="() => SeleccionarTorneo(torneo.Id)">Administrar</button></td>
                         }
@@ -64,7 +66,8 @@
             {
             <PartidoMarcador Partido="partido" 
                              PuntajeMax="torneoSeleccionado.PuntajeMax" 
-                             SetsMax="torneoSeleccionado.SetsMax" />
+                             SetsMax="torneoSeleccionado.SetsMax"
+                             PuntajeMaxDefinitorio="torneoSeleccionado.PuntajeMaxDefinitorio"/>
             }
         }
         else

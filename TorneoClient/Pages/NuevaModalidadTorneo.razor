@@ -42,12 +42,23 @@
 
         <tr>
             <td>Sets máximos</td>
-            <td><input type="number" @bind="torneo.SetsMax" /></td>
+            <td>
+                <select @bind="torneo.SetsMax">
+                    <option value="1" selected>1 set</option>
+                    <option value="3">3 sets</option>
+                    <option value="5">5 sets</option>
+                </select>
+            </td>
         </tr>
 
         <tr>
             <td>Puntaje máximo por set</td>
-            <td><input type="number" @bind="torneo.PuntajeMax" /></td>
+            <td><input type="number" @bind="torneo.PuntajeMax" max="25" min="1"/></td>
+        </tr>
+
+        <tr>
+            <td>Puntaje máximo en el último set</td>
+            <td><input type="number" @bind="torneo.PuntajeMaxDefinitorio" max="25" min="1"/></td>
         </tr>
 
     </table>

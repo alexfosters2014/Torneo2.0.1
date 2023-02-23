@@ -10,6 +10,7 @@
         public string Modalidad { get; set; }
         public int SetsMax { get; set; }
         public int PuntajeMax { get; set; }
+        public int PuntajeMaxDefinitorio { get; set; }
         public string Deporte { get; set; }
         public DateTime Desde { get; set; }
         public DateTime Hasta { get; set; }

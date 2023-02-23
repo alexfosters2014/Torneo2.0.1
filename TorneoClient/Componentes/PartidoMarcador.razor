@@ -59,7 +59,7 @@
                 <p>@Partido.HistorialPartido</p>
             </div>
         }
-        @if (!PartidoTerminado)
+        @if (!PartidoTerminado && Partido.Local != null && Partido.Visitante != null)
         {
             <div class="playPartido">
                 <a href="" @onclick="ComenzarPartido" @onclick:preventDefault>
@@ -83,8 +83,26 @@
     [Parameter]
     public int PuntajeMax { get; set; }
 
+    [Parameter]
+    public int PuntajeMaxDefinitorio { get; set; }
+
+    [Parameter]
+    public EventCallback<ViewModelEquipoGanador> SiguientePartidoParaEquipoGanador { get; set; }
+
+    private int setDiferencia = 0;
+    private int puntajeMaximoSegunSet = 0;
+
     private bool PartidaEnProceso = false;
     private bool PartidoTerminado = false;
+    private bool ModalidadTantosPorDiferencia = false;
+
+    protected override void OnInitialized()
+    {
+        decimal mitadSetTotales = Math.Round(Convert.ToDecimal(SetsMax) / 2,2);
+        setDiferencia = (int)Math.Ceiling(mitadSetTotales);
+
+        puntajeMaximoSegunSet = PuntajeMax;
+    }
 
     private string ActualizarLinkImagen(string imagenRef)
     {
@@ -118,52 +136,98 @@
         {
             Partido.MarcadorVisitante += 1;
         }
-        VerificarFinalSet();
+        VerificarFinalPorSet();
     }
 
     private void ResetearMarcador()
     {
+        Partido.HistorialPartido += $"{Partido.MarcadorLocal} / {Partido.MarcadorVisitante} - ";
         Partido.MarcadorLocal = 0;
         Partido.MarcadorVisitante = 0;
         Partido.SetActual += 1;
+        puntajeMaximoSegunSet = Partido.SetActual == SetsMax ? PuntajeMaxDefinitorio : PuntajeMax;
+        ModalidadTantosPorDiferencia = false;
     }
 
-    private void VerificarFinalSet()
+    private void VerificarFinalPorSet()
     {
-        if (Partido.MarcadorLocal >= PuntajeMax)
+
+        if (Partido.MarcadorLocal == puntajeMaximoSegunSet -1 && Partido.MarcadorVisitante == puntajeMaximoSegunSet - 1)
+        {
+            ModalidadTantosPorDiferencia = true;
+        }
+
+        if (ModalidadTantosPorDiferencia)
+        {
+            int diferenciaTantosLocal = Partido.MarcadorLocal - Partido.MarcadorVisitante;
+            int diferenciaTantosVisitante = Partido.MarcadorVisitante - Partido.MarcadorLocal;
+
+            Partido.SetsGanadosLocal = diferenciaTantosLocal == 2 ? Partido.SetsGanadosLocal + 1 : Partido.SetsGanadosLocal;
+            Partido.SetsGanadosVisitante = diferenciaTantosVisitante == 2 ? Partido.SetsGanadosVisitante + 1 : Partido.SetsGanadosVisitante;
+
+            if (diferenciaTantosLocal == 2 || diferenciaTantosVisitante == 2)
+            {
+                ResetearMarcador();
+                VerificarFinalPartido();
+            }
+            return;
+        }
+
+        if (Partido.MarcadorLocal >= puntajeMaximoSegunSet)
         {
             Partido.SetsGanadosLocal += 1;
-            Partido.HistorialPartido += $"{Partido.MarcadorLocal} / {Partido.MarcadorVisitante} - ";
             ResetearMarcador();
         }
-        if (Partido.MarcadorVisitante >= PuntajeMax)
+        if (Partido.MarcadorVisitante >= puntajeMaximoSegunSet)
         {
             Partido.SetsGanadosVisitante += 1;
-            Partido.HistorialPartido += $"{Partido.MarcadorLocal} / {Partido.MarcadorVisitante} - ";
             ResetearMarcador();
         }
         VerificarFinalPartido();
     }
 
-    private void VerificarFinalPartido()
+    private async Task VerificarFinalPartido()
     {
+
+        if (Partido.SetsGanadosLocal == setDiferencia)
+        {
+            Partido.PuntajeLocal = 1;
+            TerminarPartido();
+            await SiguientePartidoDeEquipo(Partido.Local);
+            return;
+        }
+
+        if (Partido.SetsGanadosVisitante == setDiferencia)
+        {
+            Partido.PuntajeVisitante = 1;
+            TerminarPartido();
+            await SiguientePartidoDeEquipo(Partido.Visitante);
+            return;
+        }
+
         if (Partido.SetActual > SetsMax)
         {
             if (Partido.SetsGanadosLocal > Partido.SetsGanadosVisitante)
             {
                 Partido.PuntajeLocal = 1;
+                await SiguientePartidoDeEquipo(Partido.Local);
             }
             else
             {
                 Partido.PuntajeVisitante = 1;
+                await SiguientePartidoDeEquipo(Partido.Visitante);
             }
-            PartidaEnProceso = false;
-            PartidoTerminado = true;
-            //contemplar si empatan . Ver que se puede hacer
+            TerminarPartido();
         }
     }
 
-    private void IncrementarMarcador(string tipoEquipo)
+    private void TerminarPartido()
+    {
+        PartidaEnProceso = false;
+        PartidoTerminado = true;
+    }
+
+    private void DecrementarMarcador(string tipoEquipo)
     {
         if (tipoEquipo == "LOCAL" && Partido.MarcadorLocal > 0)
         {
@@ -173,6 +237,15 @@
         {
             Partido.MarcadorVisitante -= 1;
         }
-        
+    }
+
+    async Task SiguientePartidoDeEquipo(EquipoVM equipoGanador)
+    {
+        ViewModelEquipoGanador viewModelEquipoGanador = new()
+            {
+                GuidPartidoSiguiente = Partido.PartidoSiguienteGuid,
+                EquipoGanador = equipoGanador
+        };
+        await SiguientePartidoParaEquipoGanador.InvokeAsync(viewModelEquipoGanador);
     }
 }

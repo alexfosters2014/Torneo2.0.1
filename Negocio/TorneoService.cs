@@ -46,6 +46,7 @@ namespace Negocio
                                          Modalidad = s.Modalidad,
                                          SetsMax = s.SetsMax,
                                          PuntajeMax = s.PuntajeMax,
+                                         PuntajeMaxDefinitorio = s.PuntajeMaxDefinitorio,
                                          Deporte = s.Deporte,
                                          Desde = s.Desde,
                                          Hasta = s.Hasta,

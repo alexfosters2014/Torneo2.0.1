@@ -186,3 +186,6 @@ h1 {
         -webkit-transform: translate3d(440px, 0, 0);
         transform: translate3d(440px, 0, 0);
     }
+    .fa{
+        font-size:25px !important;
+    }

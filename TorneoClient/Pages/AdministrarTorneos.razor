@@ -67,7 +67,8 @@
             <PartidoMarcador Partido="partido" 
                              PuntajeMax="torneoSeleccionado.PuntajeMax" 
                              SetsMax="torneoSeleccionado.SetsMax"
-                             PuntajeMaxDefinitorio="torneoSeleccionado.PuntajeMaxDefinitorio"/>
+                             PuntajeMaxDefinitorio="torneoSeleccionado.PuntajeMaxDefinitorio"
+                             SiguientePartidoParaEquipoGanador="ClasificaGanador"/>
             }
         }
         else
@@ -118,5 +119,18 @@
         CambioEditor();
     }
 
+    async Task ClasificaGanador(ViewModelEquipoGanador viewModelEquipoGanador)
+    {
+        var partidoSiguiente = torneoSeleccionado.Fixture.SingleOrDefault(s => s.Guid == viewModelEquipoGanador.GuidPartidoSiguiente);
+
+        if (partidoSiguiente.Local == null) { 
+            partidoSiguiente.Local = viewModelEquipoGanador.EquipoGanador; }
+        else if (partidoSiguiente.Visitante == null) { 
+            partidoSiguiente.Visitante = viewModelEquipoGanador.EquipoGanador;
+        }
+
+        //StateHasChanged();
+    }
+   
 
 }

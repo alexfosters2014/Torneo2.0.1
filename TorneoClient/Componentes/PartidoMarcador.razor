@@ -59,7 +59,7 @@
                 <p>@Partido.HistorialPartido</p>
             </div>
         }
-        @if (!PartidoTerminado)
+        @if (!PartidoTerminado && Partido.Local != null && Partido.Visitante != null)
         {
             <div class="playPartido">
                 <a href="" @onclick="ComenzarPartido" @onclick:preventDefault>
@@ -85,6 +85,9 @@
 
     [Parameter]
     public int PuntajeMaxDefinitorio { get; set; }
+
+    [Parameter]
+    public EventCallback<ViewModelEquipoGanador> SiguientePartidoParaEquipoGanador { get; set; }
 
     private int setDiferencia = 0;
     private int puntajeMaximoSegunSet = 0;
@@ -183,13 +186,14 @@
         VerificarFinalPartido();
     }
 
-    private void VerificarFinalPartido()
+    private async Task VerificarFinalPartido()
     {
 
         if (Partido.SetsGanadosLocal == setDiferencia)
         {
             Partido.PuntajeLocal = 1;
             TerminarPartido();
+            await SiguientePartidoDeEquipo(Partido.Local);
             return;
         }
 
@@ -197,6 +201,7 @@
         {
             Partido.PuntajeVisitante = 1;
             TerminarPartido();
+            await SiguientePartidoDeEquipo(Partido.Visitante);
             return;
         }
 
@@ -205,13 +210,14 @@
             if (Partido.SetsGanadosLocal > Partido.SetsGanadosVisitante)
             {
                 Partido.PuntajeLocal = 1;
+                await SiguientePartidoDeEquipo(Partido.Local);
             }
             else
             {
                 Partido.PuntajeVisitante = 1;
+                await SiguientePartidoDeEquipo(Partido.Visitante);
             }
             TerminarPartido();
-            //contemplar si empatan . Ver que se puede hacer
         }
     }
 
@@ -231,6 +237,15 @@
         {
             Partido.MarcadorVisitante -= 1;
         }
-        
+    }
+
+    async Task SiguientePartidoDeEquipo(EquipoVM equipoGanador)
+    {
+        ViewModelEquipoGanador viewModelEquipoGanador = new()
+            {
+                GuidPartidoSiguiente = Partido.PartidoSiguienteGuid,
+                EquipoGanador = equipoGanador
+        };
+        await SiguientePartidoParaEquipoGanador.InvokeAsync(viewModelEquipoGanador);
     }
 }

@@ -40,7 +40,7 @@
                         @onclick:preventDefault>
              <h2>@Partido.MarcadorLocal.ToString("00")</h2>
             </a>
-            <p>set: @Partido.SetsGanadosLocal</p>
+            <MarcadorSetGanados CantidadSetGanados="Partido.SetsGanadosLocal" />
         </div>
 
         <div class="medioSet caja">
@@ -52,7 +52,7 @@
                             @onclick:preventDefault>
                     <h2 >@Partido.MarcadorVisitante.ToString("00")</h2>
                 </a>
-            <p>set: @Partido.SetsGanadosVisitante</p>
+                <MarcadorSetGanados CantidadSetGanados="Partido.SetsGanadosVisitante" />
         </div>
 
             <div class="pie">

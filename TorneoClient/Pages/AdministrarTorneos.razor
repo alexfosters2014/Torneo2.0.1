@@ -1,5 +1,6 @@
 ﻿@page "/administrar/torneos"
 @inject DataServiceTorneo dataServiceTorneo
+@inject IToastService toast
 
 <h3>Administrar Torneos</h3>
 
@@ -53,12 +54,17 @@
             </table>
                 
         </div>
-        }
     }
-    else
+}
+else
+{
+    @if (torneoSeleccionado.Fixture == null || torneoSeleccionado.Fixture.Count == 0)
     {
         <button class="buttonStyle" @onclick="() => AutomatizarFixture()">Crear Fixture automático</button>
+    }
         <button class="buttonStyle" >Crear grupo de marcadores de partido</button>
+
+        <EspacioHorizontal Altura="25px" />
 
         @if (torneoSeleccionado != null && torneoSeleccionado.Fixture.Count > 0)
         {
@@ -73,7 +79,7 @@
         }
         else
         {
-          <p>No hay torneo seleccionado</p>
+          <p>No hay Fixture creado</p>
         }
     }
    
@@ -105,9 +111,23 @@
 
     private async Task AutomatizarFixture()
     {
-        torneoSeleccionado.Fixture = dataServiceTorneo.CrearFixtureAut(torneoSeleccionado);
-        //torneoSeleccionado.Fixture = torneoSeleccionado.Fixture.OrderBy(o => o.Ronda).ToList();
-        //falta guardar el fixture en la base de datos
+        try
+        {
+            torneoSeleccionado.Fixture = dataServiceTorneo.CrearFixtureAut(torneoSeleccionado);
+            ViewModelFixture viewModelFixture = new()
+                {
+                    TorneoId = torneoSeleccionado.Id,
+                    Fixture = torneoSeleccionado.Fixture
+                };
+
+            bool resultado = await dataServiceTorneo.GuardarFixtureCompleto(viewModelFixture);
+            toast.ShowSuccess("Fixture guardado exitosamente");
+        }
+        catch (Exception ex)
+        {
+            toast.ShowWarning(ex.Message); 
+        }
+       
 
     }
 

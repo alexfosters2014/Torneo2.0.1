@@ -209,7 +209,27 @@ namespace TorneoClient.DataService
             }
         }
 
+        public async Task<bool> GuardarFixtureCompleto(ViewModelFixture viewModelFixture)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("/Torneo/Guardar/Fixture",viewModelFixture);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var contentError = await response.Content.ReadAsStringAsync();
+                    var error = JsonConvert.DeserializeObject<string>(contentError);
+                    throw new Exception(error);
+                }
 
+                var content = await response.Content.ReadAsStringAsync();
+                var resultado = JsonConvert.DeserializeObject<bool>(content);
+                return resultado;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
 
     }

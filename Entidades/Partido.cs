@@ -6,12 +6,12 @@ namespace Entidades
     {
         public int Id { get; set; }
         [ForeignKey("Local")]
-        public int LocalId { get; set; }
-        public Equipo Local { get; set; } = new();
+        public int? LocalId { get; set; }
+        public virtual Equipo? Local { get; set; } = new();
 
         [ForeignKey("Visitante")]
-        public int VisitanteId { get; set; }
-        public Equipo Visitante { get; set; } = new();
+        public int? VisitanteId { get; set; }
+        public virtual Equipo? Visitante { get; set; } = new();
         public int MarcadorLocal { get; set; }
         public int MarcadorVisitante { get; set; }
         public int SetsGanadosLocal { get; set; }
@@ -20,12 +20,13 @@ namespace Entidades
         public int PuntajeLocal { get; set; }
         public int PuntajeVisitante { get; set; }
         public Guid PartidoSiguienteGuid { get; set; }
+        public int TorneoId { get; set; } = new();
         public Torneo Torneo { get; set; } = new();
-        public string NombreCancha { get; set; }
+        public string NombreCancha { get; set; } = string.Empty;
         public DateTime Fecha { get; set; }
         public int Posición { get; set; }
-        public string HistorialPartido { get; set; }
-        public string Lugar { get; set; }
+        public string HistorialPartido { get; set; } = string.Empty;
+        public string Lugar { get; set; } = string.Empty;
 
 
         public int Orden { get; set; }

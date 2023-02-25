@@ -17,7 +17,6 @@ img {
     padding: 5px;
     border-radius: 40px;
     width: 40vw;
-    height:auto;
     grid-template-areas: "visitante puntosv medio puntosl local"
         "separador separador separador separador separador"
         "marcadorv sets sets sets marcadorl"
@@ -103,6 +102,10 @@ img {
     margin: 10px;
 }
 
+.medioSet img{
+    height:50px;
+    width:auto;
+}
 .marcL p, .marcV p {
     text-align: center;
     font-size: 1.2rem;

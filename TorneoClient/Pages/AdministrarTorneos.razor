@@ -13,7 +13,7 @@
         }
         else
         {
-     <div class="containerAddJugador">
+        <div class="containerAddJugador table-wrapper-scroll-y my-custom-scrollbar">
             <table class="blueTable">
                 <tr style="align-content:center">
                     <td></td>
@@ -27,7 +27,7 @@
                     <td>Sets Max</td>
                     <td></td>
                 </tr>
-                <tr>
+               
 
                     @if (torneos.Count == 0)
                     {
@@ -37,6 +37,7 @@
                     {
                         @foreach (var torneo in torneos)
                         {
+                        <tr>
                             <td><img src="@ActualizarLinkImagen(torneo.ImagenRef)" alt="" class="imagenEnListada"></td>
                             <td>@torneo.Nombre</td>
                             <td>@torneo.Desde.ToString("dd/MM/yyyy")</td>
@@ -47,10 +48,9 @@
                             <td>@torneo.PuntajeMaxDefinitorio</td>
                             <td>@torneo.SetsMax</td>
                             <td><button class="buttonStyle" @onclick="() => SeleccionarTorneo(torneo.Id)">Administrar</button></td>
+                        </tr>
                         }
                     }
-
-                </tr>
             </table>
                 
         </div>
@@ -127,7 +127,7 @@ else
         {
             toast.ShowWarning(ex.Message); 
         }
-       
+
 
     }
 
@@ -141,15 +141,30 @@ else
 
     async Task ClasificaGanador(ViewModelEquipoGanador viewModelEquipoGanador)
     {
-        var partidoSiguiente = torneoSeleccionado.Fixture.SingleOrDefault(s => s.Guid == viewModelEquipoGanador.GuidPartidoSiguiente);
+        try
+        {
+            var partidoSiguiente = torneoSeleccionado.Fixture.SingleOrDefault(s => s.Guid == viewModelEquipoGanador.GuidPartidoSiguiente);
 
-        if (partidoSiguiente.Local == null) { 
-            partidoSiguiente.Local = viewModelEquipoGanador.EquipoGanador; }
-        else if (partidoSiguiente.Visitante == null) { 
-            partidoSiguiente.Visitante = viewModelEquipoGanador.EquipoGanador;
+            if (partidoSiguiente != null)
+            {
+                if (partidoSiguiente.Local == null)
+                {
+                    partidoSiguiente.Local = viewModelEquipoGanador.EquipoGanador;
+                }
+                else if (partidoSiguiente.Visitante == null)
+                {
+                    partidoSiguiente.Visitante = viewModelEquipoGanador.EquipoGanador;
+                }
+            }
+            await dataServiceTorneo.ActualizarPartido(partidoSiguiente);
+
+            toast.ShowSuccess("Siguiente partido actualizado");
         }
-
-        //StateHasChanged();
+        catch (Exception ex)
+        {
+            toast.ShowWarning(ex.Message);
+        }
+       
     }
    
 

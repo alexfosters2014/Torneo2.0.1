@@ -1,4 +1,5 @@
 ﻿@inject IToastService toast;
+@inject DataServiceTorneo dataServiceTorneo
 
 @if (Partido != null)
 {
@@ -45,6 +46,7 @@
 
         <div class="medioSet caja">
             <h4>SET: @Partido.SetActual</h4>
+            <img src="/img/componentes/jugando.png" alt="jugando"/>
         </div>
 
         <div class="marcL caja">
@@ -58,19 +60,20 @@
             <div class="pie">
                 <p>@Partido.HistorialPartido</p>
             </div>
+            <EspacioHorizontal Altura="20px" />
         }
-        @if (!PartidoTerminado && Partido.Local != null && Partido.Visitante != null)
+        @if (!EsconderIconoPlay && Partido.Local != null && Partido.Visitante != null)
         {
             <div class="playPartido">
                 <a href="" @onclick="ComenzarPartido" @onclick:preventDefault>
-                    <img src="/img/componentes/play.png" alt="">
+                    <img src="/img/componentes/@ImagenPlay" alt="">
                 </a>
             </div>
         }
        
     </div>
 
-    <div style="height:15px;width:auto"></div>
+   <EspacioHorizontal Altura="15px" />
 }
 
 @code {
@@ -93,8 +96,12 @@
     private int puntajeMaximoSegunSet = 0;
 
     private bool PartidaEnProceso = false;
-    private bool PartidoTerminado = false;
+    private bool EsconderIconoPlay = false;
     private bool ModalidadTantosPorDiferencia = false;
+
+    private string ImagenPlay = "play.png";
+
+    private DateTime HorarioInicioPartido;
 
     protected override void OnInitialized()
     {
@@ -102,6 +109,7 @@
         setDiferencia = (int)Math.Ceiling(mitadSetTotales);
 
         puntajeMaximoSegunSet = PuntajeMax;
+        if (Partido.PuntajeLocal > 0 || Partido.PuntajeVisitante > 0) EsconderIconoPlay = true;
     }
 
     private string ActualizarLinkImagen(string imagenRef)
@@ -119,6 +127,8 @@
         if (Partido.Local != null && Partido.Visitante != null)
         {
             PartidaEnProceso = true;
+            EsconderIconoPlay = true;
+            ImagenPlay = "pelota.png";
         }
         else
         {
@@ -224,7 +234,7 @@
     private void TerminarPartido()
     {
         PartidaEnProceso = false;
-        PartidoTerminado = true;
+        EsconderIconoPlay = true;
     }
 
     private void DecrementarMarcador(string tipoEquipo)
@@ -241,11 +251,21 @@
 
     async Task SiguientePartidoDeEquipo(EquipoVM equipoGanador)
     {
-        ViewModelEquipoGanador viewModelEquipoGanador = new()
-            {
-                GuidPartidoSiguiente = Partido.PartidoSiguienteGuid,
-                EquipoGanador = equipoGanador
-        };
-        await SiguientePartidoParaEquipoGanador.InvokeAsync(viewModelEquipoGanador);
+        try
+        {
+            ViewModelEquipoGanador viewModelEquipoGanador = new()
+                {
+                    GuidPartidoSiguiente = Partido.PartidoSiguienteGuid,
+                    EquipoGanador = equipoGanador
+                };
+            await dataServiceTorneo.ActualizarPartido(Partido);
+            toast.ShowSuccess("Partido fianzalizado guardado");
+            await SiguientePartidoParaEquipoGanador.InvokeAsync(viewModelEquipoGanador);
+        }
+        catch (Exception ex)
+        {
+            toast.ShowWarning(ex.Message);
+        }
+       
     }
 }

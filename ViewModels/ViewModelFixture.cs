@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ViewModels
 {
-    public class ViewModelEquipoGanador
+    public class ViewModelFixture
     {
-        public Guid GuidPartidoSiguiente { get; set; }
-        public EquipoVM EquipoGanador { get; set; } = new();
+        public int TorneoId { get; set; }
+        public List<PartidoVM> Fixture { get; set; }
     }
 }

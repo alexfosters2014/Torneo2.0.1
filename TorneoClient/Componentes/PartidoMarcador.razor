@@ -141,7 +141,7 @@
 
     private void ResetearMarcador()
     {
-        Partido.HistorialPartido += $"{Partido.MarcadorLocal} / {Partido.MarcadorVisitante} - ";
+        Partido.HistorialPartido += $"[{Partido.MarcadorLocal}-{Partido.MarcadorVisitante}]  ";
         Partido.MarcadorLocal = 0;
         Partido.MarcadorVisitante = 0;
         Partido.SetActual += 1;

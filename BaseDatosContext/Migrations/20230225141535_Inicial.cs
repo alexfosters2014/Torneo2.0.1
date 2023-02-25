@@ -17,9 +17,9 @@ namespace BaseDatosContext.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    NombreEquipo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Caratula = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Deporte = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    NombreEquipo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Caratula = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Deporte = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -32,9 +32,9 @@ namespace BaseDatosContext.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Cedula = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Nombres = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Apellidos = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Cedula = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Nombres = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Apellidos = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FechaNacimiento = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -48,12 +48,13 @@ namespace BaseDatosContext.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ImagenRef = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Modalidad = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImagenRef = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Modalidad = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     SetsMax = table.Column<int>(type: "int", nullable: false),
                     PuntajeMax = table.Column<int>(type: "int", nullable: false),
-                    Deporte = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PuntajeMaxDefinitorio = table.Column<int>(type: "int", nullable: false),
+                    Deporte = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Desde = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Hasta = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -68,7 +69,7 @@ namespace BaseDatosContext.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -129,20 +130,22 @@ namespace BaseDatosContext.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    LocalId = table.Column<int>(type: "int", nullable: false),
-                    VisitanteId = table.Column<int>(type: "int", nullable: false),
+                    LocalId = table.Column<int>(type: "int", nullable: true),
+                    VisitanteId = table.Column<int>(type: "int", nullable: true),
                     MarcadorLocal = table.Column<int>(type: "int", nullable: false),
                     MarcadorVisitante = table.Column<int>(type: "int", nullable: false),
                     SetsGanadosLocal = table.Column<int>(type: "int", nullable: false),
                     SetsGanadosVisitante = table.Column<int>(type: "int", nullable: false),
                     SetActual = table.Column<int>(type: "int", nullable: false),
+                    PuntajeLocal = table.Column<int>(type: "int", nullable: false),
+                    PuntajeVisitante = table.Column<int>(type: "int", nullable: false),
                     PartidoSiguienteGuid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TorneoId = table.Column<int>(type: "int", nullable: true),
-                    NombreCancha = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TorneoId = table.Column<int>(type: "int", nullable: false),
+                    NombreCancha = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Posición = table.Column<int>(type: "int", nullable: false),
-                    HistorialPartido = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Lugar = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HistorialPartido = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Lugar = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Orden = table.Column<int>(type: "int", nullable: false),
                     Ronda = table.Column<int>(type: "int", nullable: false),
                     Guid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -155,19 +158,18 @@ namespace BaseDatosContext.Migrations
                         name: "FK_Partidos_Equipos_LocalId",
                         column: x => x.LocalId,
                         principalTable: "Equipos",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Partidos_Equipos_VisitanteId",
                         column: x => x.VisitanteId,
                         principalTable: "Equipos",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Partidos_Torneos_TorneoId",
                         column: x => x.TorneoId,
                         principalTable: "Torneos",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

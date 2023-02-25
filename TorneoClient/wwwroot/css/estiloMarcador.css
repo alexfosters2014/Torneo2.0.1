@@ -10,12 +10,14 @@ img {
 }
 
 .gridContainer {
+    position:relative;
     display: grid;
     box-shadow: 3px 3px 12px #3D1919;
     font-family: 'Roboto', sans-serif;
     padding: 5px;
     border-radius: 40px;
     width: 40vw;
+    height:auto;
     grid-template-areas: "visitante puntosv medio puntosl local"
         "separador separador separador separador separador"
         "marcadorv sets sets sets marcadorl"
@@ -125,48 +127,45 @@ hr {
 }
 
 .playPartido {
-    position: relative;
+    position: absolute;
     left: 38vw;
-    top: -10%;
+    bottom: 10%;
 }
 
 
     .playPartido img {
-        height: 60px;
-        height: 60px;
+        height: 50px;
+        height: 50px;
     }
 
 
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1200px) {
     .gridContainer {
         width: 70vw;
     }
 
     .playPartido {
-        left: 68vw;
-        top: -10%;
+        left: 67vw;
     }
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 850px) {
     .gridContainer {
         width: 80vw;
     }
 
     .playPartido {
-        left: 78vw;
-        top: -10%;
+        left: 76vw;
     }
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 600px) {
     .gridContainer {
         width: 100%;
     }
 
     .playPartido {
-        left: 150%;
-        top: 50%;
+        left: 95%;
     }   
     .playPartido img {
         height: 40px;

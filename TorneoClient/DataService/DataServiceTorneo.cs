@@ -231,6 +231,26 @@ namespace TorneoClient.DataService
             }
         }
 
+        public async Task<bool> ActualizarPartido(PartidoVM partidoVM)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("/Torneo/Actualizar/Partido", partidoVM);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var contentError = await response.Content.ReadAsStringAsync();
+                    var error = JsonConvert.DeserializeObject<string>(contentError);
+                    throw new Exception(error);
+                }
 
+                var content = await response.Content.ReadAsStringAsync();
+                var resultado = JsonConvert.DeserializeObject<bool>(content);
+                return resultado;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

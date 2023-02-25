@@ -14,6 +14,7 @@ namespace TorneoWebApi.EndPoints
             app.MapPost("/Torneo/Inscripcion", InscribirEquipoATorneo);
             app.MapPost("/Torneo/Crear", CrearTorneo);
             app.MapPost("/Torneo/Guardar/Fixture", GuardarFixture);
+            app.MapPost("/Torneo/Actualizar/Partido", ActualizarPartido);
         }
 
         public static async Task<IResult> GetTorneosPorDeporteInscripcion(TorneoService torneoService, string deporte)
@@ -97,6 +98,20 @@ namespace TorneoWebApi.EndPoints
             {
                 var resultado = await torneoService.GuardarFixtureCompleto(viewModelFixture.TorneoId, viewModelFixture.Fixture);
                 if (resultado == false) return Results.BadRequest("El fixture no se ha podido guardar");
+
+                return Results.Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                return Results.BadRequest(ex.Message);
+            }
+        }
+        public static async Task<IResult> ActualizarPartido(TorneoService torneoService, PartidoVM partidoVM)
+        {
+            try
+            {
+                var resultado = await torneoService.ActualizarPartido(partidoVM);
+                if (resultado == false) return Results.BadRequest("El partido no se ha podido actualizar");
 
                 return Results.Ok(resultado);
             }

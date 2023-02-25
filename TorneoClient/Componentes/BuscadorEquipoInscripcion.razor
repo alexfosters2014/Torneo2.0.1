@@ -8,26 +8,27 @@
     <button @onclick="BuscarEquipo" class="buttonStyle">Buscar</button>
 
 
-    <table class="blueTable">
+    <table class="blueTable table-wrapper-scroll-y my-custom-scrollbar">
     <tr style="align-content:center">
         <td></td>
         <td>Nombre de equipo</td>
         <td>Apellidos</td>
         <td></td>
     </tr>
-    <tr>
+    
        
         @if (equiposBuscados != null)
         {
                 @foreach(var eq in equiposBuscados)
                 {
+                <tr>
                     <td><img src="@ActualizarLinkImagen(eq.Caratula)" alt="" class="imagenEnListada"></td>
                     <td>@eq.NombreEquipo</td>
                     <td><button class="buttonStyle" @onclick="() => ElegirEquipo(eq.Id)">Seleccionar</button></td>
+                </tr>
                 }
         }
-       
-    </tr>
+  
 </table>
 </div>
 

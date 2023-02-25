@@ -25,6 +25,7 @@ namespace Negocio
         public async Task<List<ViewModelTorneo>> GetTorneosDeporteInscripcion(string deporte)
         {
             return await _db.Torneos.Where(t => t.Deporte == deporte)
+                              .AsNoTracking()
                               .Select(s => new ViewModelTorneo()
                               {
                                     Id = s.Id,
@@ -38,6 +39,7 @@ namespace Negocio
         public async Task<List<ViewModelTorneo>> GetTorneosVigentes()
         {
             var torneos = await _db.Torneos.Include(i => i.Fixture)
+                                     .AsNoTracking()
                                      .Where(w => w.Desde >= DateTime.Today)
                                      .Select(s => new ViewModelTorneo()
                                      {
@@ -104,6 +106,7 @@ namespace Negocio
         {
             return _db.Torneos.Include(i => i.Inscripciones)
                               .Include(i => i.Fixture)
+                              .AsNoTracking()
                               .Where(t => t.Nombre.Contains(nombre.ToUpper())).ToList();
         }
 
@@ -172,10 +175,10 @@ namespace Negocio
         {
             try
             {
-                var partidoDB = await _db.Torneos.FindAsync(torneoId);
-                if (partidoDB == null) throw new Exception("No se encuentra el torneo seleccionado");
+                var torneoDB = await _db.Torneos.FindAsync(torneoId);
+                if (torneoDB == null) throw new Exception("No se encuentra el torneo seleccionado");
 
-                partidoDB.Fixture = partidosVM.Select(s => new Partido()
+                torneoDB.Fixture = partidosVM.Select(s => new Partido()
                 {
                     Id = s.Id,
                     Fecha = s.Fecha,
@@ -211,7 +214,7 @@ namespace Negocio
                     SetsGanadosVisitante = s.SetsGanadosVisitante
                 }).ToList();
 
-                foreach (var partido in partidoDB.Fixture)
+                foreach (var partido in torneoDB.Fixture)
                 {
                     if (partido.Local != null)
                     {
@@ -226,7 +229,7 @@ namespace Negocio
                     _db.Entry(partido).State = EntityState.Added;
                 }
 
-                _db.Update(partidoDB);
+                _db.Update(torneoDB);
                 await _db.SaveChangesAsync();
                 return true;
             }
@@ -235,6 +238,69 @@ namespace Negocio
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<bool> ActualizarPartido(PartidoVM partidoVM)
+        {
+            try
+            {
+                var partidoDB = await _db.Partidos.FindAsync(partidoVM.Id);
+                if (partidoDB == null) throw new Exception("No se encuentra el partido seleccionado");
+
+               
+                    partidoDB.Id = partidoVM.Id;
+                    partidoDB.Fecha = partidoVM.Fecha;
+                    partidoDB.Guid = partidoVM.Guid;
+                    partidoDB.HistorialPartido = partidoVM.HistorialPartido;
+                    partidoDB.Local = partidoVM.Local == null ? null : new Equipo()
+                    {
+                        Id = partidoVM.Local.Id,
+                        Caratula = partidoVM.Local.Caratula,
+                        Deporte = partidoVM.Local.Deporte,
+                        NombreEquipo = partidoVM.Local.NombreEquipo
+                    };
+                     partidoDB.Visitante = partidoVM.Visitante == null ? null : new Equipo()
+                    {
+                        Id = partidoVM.Visitante.Id,
+                        Caratula = partidoVM.Visitante.Caratula,
+                        Deporte = partidoVM.Visitante.Deporte,
+                        NombreEquipo = partidoVM.Visitante.NombreEquipo
+                    };
+                    partidoDB.Lugar = partidoVM.Lugar;
+                    partidoDB.MarcadorLocal = partidoVM.MarcadorLocal;
+                    partidoDB.MarcadorVisitante = partidoVM.MarcadorVisitante;
+                    partidoDB.NombreCancha = partidoVM.NombreCancha;
+                    partidoDB.Orden = partidoVM.Orden;
+                    partidoDB.PartidoSiguienteGuid = partidoVM.PartidoSiguienteGuid;
+                    partidoDB.Posición = partidoVM.Posición;
+                    partidoDB.PuntajeLocal = partidoVM.PuntajeLocal;
+                    partidoDB.PuntajeVisitante = partidoVM.PuntajeVisitante;
+                    partidoDB.Ronda = partidoVM.Ronda;
+                    partidoDB.RondaDescanso = partidoVM.RondaDescanso;
+                    partidoDB.SetActual = partidoVM.SetActual;
+                    partidoDB.SetsGanadosLocal = partidoVM.SetsGanadosLocal;
+                    partidoDB.SetsGanadosVisitante = partidoVM.SetsGanadosVisitante;
+
+                    if (partidoDB.Local != null)
+                    {
+                        _db.Entry(partidoDB.Local).State = EntityState.Unchanged;
+                    }
+
+                    if (partidoDB.Visitante != null)
+                    {
+                        _db.Entry(partidoDB.Visitante).State = EntityState.Unchanged;
+                    }
+
+                _db.Partidos.Update(partidoDB);
+                await _db.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+
 
     }
 }

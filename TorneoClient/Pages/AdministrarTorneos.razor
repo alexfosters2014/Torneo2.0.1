@@ -1,12 +1,16 @@
 ﻿@page "/administrar/torneos"
+@using Microsoft.AspNetCore.SignalR.Client;
 @inject DataServiceTorneo dataServiceTorneo
 @inject IToastService toast
+@inject NavigationManager nav
+@inject HubConnection hubConnection
+@inject DataServiceHub dataServiceHub
 
 <h3>Administrar Torneos</h3>
 
 
-    @if (!modoEditor)
-    {
+@if (!modoEditor)
+{
         @if (torneos == null)
         {
             <p>Cargando...</p>
@@ -74,6 +78,7 @@ else
                              PuntajeMax="torneoSeleccionado.PuntajeMax" 
                              SetsMax="torneoSeleccionado.SetsMax"
                              PuntajeMaxDefinitorio="torneoSeleccionado.PuntajeMaxDefinitorio"
+                             TorneoId="torneoSeleccionado.Id"
                              SiguientePartidoParaEquipoGanador="ClasificaGanador"/>
             }
         }
@@ -81,7 +86,6 @@ else
         {
           <p>No hay Fixture creado</p>
         }
-    }
    
 
 
@@ -95,6 +99,7 @@ else
     protected async override Task OnInitializedAsync()
     {
         await GetTorneos();
+        //await hubConnection.StartAsync();
     }
 
     private async Task GetTorneos()
@@ -155,17 +160,23 @@ else
                 {
                     partidoSiguiente.Visitante = viewModelEquipoGanador.EquipoGanador;
                 }
+                await dataServiceTorneo.ActualizarPartido(partidoSiguiente);
+                toast.ShowSuccess("Siguiente partido actualizado");
+                await EnviarPartidoActualizadoATodos(partidoSiguiente);
             }
-            await dataServiceTorneo.ActualizarPartido(partidoSiguiente);
 
-            toast.ShowSuccess("Siguiente partido actualizado");
         }
         catch (Exception ex)
         {
             toast.ShowWarning(ex.Message);
         }
-       
+
     }
-   
+
+    private async Task EnviarPartidoActualizadoATodos(PartidoVM partidoVM)
+    {
+        await dataServiceHub.EnviarPartidoATodos(torneoSeleccionado.Id, partidoVM);
+    }
+}
 
 }

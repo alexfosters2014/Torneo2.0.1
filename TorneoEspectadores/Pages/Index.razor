@@ -1,0 +1,121 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client;
+@inject DataServiceTorneoPartido dataService
+@inject NavigationManager nav
+@inject HubConnection hubConnection
+
+<PageTitle>Bienvenido al Torneo Espectador 2.0</PageTitle>
+
+<h1>Bienvenido al Torneo Espectador 2.0</h1>
+<h3>Elija un torneo</h3>
+ <select @onchange="CambioTorneo">
+                               <option value="0" selected>Seleccionar un torneo</option>
+                            @foreach (var torneo in torneosVigentes)
+                            {
+                               <option value="@torneo.Id">@torneo.Nombre</option>
+                            }
+                    </select>
+
+    <EspacioHorizontal Altura="25px" />
+
+    @if (torneoSeleccionado != null && torneoSeleccionado.Fixture.Count > 0)
+    {
+        @foreach (var partido in torneoSeleccionado.Fixture)
+        {
+            <PartidoMarcador Partido="partido"/>
+        }
+    }
+
+
+@code{
+    List<ViewModelTorneo> torneosVigentes = new();
+
+    ViewModelTorneo torneoSeleccionado = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        await ActualizarListaTorneos();
+
+        hubConnection.On<ViewModelTorneoPartidoHub>("RecibirPartidoVM", async (viewModelTorneoPartidoHub) =>
+        {
+            if (viewModelTorneoPartidoHub.TorneoId == torneoSeleccionado.Id)
+            {
+                await ActualizarFixtureHub(viewModelTorneoPartidoHub); 
+            }
+
+        });
+
+        await hubConnection.StartAsync();
+
+    }
+
+    private async Task ActualizarFixtureHub(ViewModelTorneoPartidoHub viewModelTorneoPartidoHub)
+    {
+        var partidoVM = viewModelTorneoPartidoHub.PartidoVM;
+        torneoSeleccionado.Fixture.ForEach(partidoActual =>
+         {
+             if (partidoActual.Id == partidoVM.Id)
+             {
+                 partidoActual.Local = partidoVM.Local;
+                 partidoActual.Visitante = partidoVM.Visitante;
+                 partidoActual.MarcadorLocal = partidoVM.MarcadorLocal;
+                 partidoActual.MarcadorVisitante = partidoVM.MarcadorVisitante;
+                 partidoActual.SetsGanadosLocal = partidoVM.SetsGanadosLocal;
+                 partidoActual.SetsGanadosVisitante = partidoVM.SetsGanadosVisitante;
+                 partidoActual.SetActual = partidoVM.SetActual;
+                 partidoActual.PuntajeLocal = partidoVM.PuntajeLocal;
+                 partidoActual.PuntajeVisitante = partidoVM.PuntajeVisitante;
+                 partidoActual.PartidoSiguienteGuid = partidoVM.PartidoSiguienteGuid;
+                 partidoActual.NombreCancha = partidoVM.NombreCancha;
+                 partidoActual.Fecha = partidoVM.Fecha;
+                 partidoActual.Posición = partidoVM.Posición;
+                 partidoActual.HistorialPartido = partidoVM.HistorialPartido;
+                 partidoActual.Lugar = partidoVM.Lugar;
+                 partidoActual.Orden = partidoVM.Orden;
+                 partidoActual.Ronda = partidoVM.Ronda;
+                 partidoActual.Guid = partidoVM.Guid;
+                 partidoActual.RondaDescanso = partidoVM.RondaDescanso;
+                 partidoActual.PartidaEnProceso = partidoVM.PartidaEnProceso;
+                 StateHasChanged();
+                 return;
+             }
+         });
+    }
+    private async Task ActualizarListaTorneos()
+    {
+        try
+        {
+            torneosVigentes = await dataService.GetTorneosVigentes();
+        }
+        catch (Exception ex)
+        {
+            //toast.ShowError(ex.Message);
+        }
+
+    }
+
+    void CambioTorneo(ChangeEventArgs e)
+    {
+        int torneoSeleccionadoId = Int32.Parse(e.Value.ToString());
+
+        torneoSeleccionado = torneosVigentes.SingleOrDefault(s => s.Id == torneoSeleccionadoId);
+    }
+
+    private async Task VerPartidosTorneo()
+    {
+        try
+        {
+          //
+        }
+        catch (Exception ex)
+        {
+            //toast.ShowError(ex.Message);
+        }
+
+    }
+
+    public void Dispose()
+    {
+        hubConnection.DisposeAsync();
+    }
+}

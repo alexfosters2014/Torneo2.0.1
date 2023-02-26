@@ -6,16 +6,14 @@ namespace TorneoWebApi.PartidoHub
 {
     public class PartidoHub : Hub
     {
-        public async Task SendEstadoHub(int estado)
+        public async Task SendPartidoHub(ViewModelTorneoPartidoHub torneoVM)
         {
-            await Clients.All.SendAsync("RecibirEstado", estado);
+            await Clients.All.SendAsync("RecibirPartidoVM", torneoVM);
         }
 
-        public async Task SendEstadoBolsaHub(PartidoVM partido)
+        public async Task PeticionActualizarHub(ViewModelTorneo torneoVM)
         {
-            await Clients.All.SendAsync("RecibirEnBolsa", partido);
+            await Clients.All.SendAsync("RecibirActualizarPartido", torneoVM);
         }
-
-
     }
 }

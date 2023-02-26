@@ -1,22 +1,14 @@
-using Blazored.Modal;
-using Blazored.Toast;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.SignalR.Client;
-using MudBlazor.Services;
-using TorneoClient;
-using TorneoClient.DataService;
+using TorneoEspectadores;
+using TorneoEspectadores.DataServices;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
-
-
-builder.Services.AddBlazoredModal();
-builder.Services.AddBlazoredToast();
-builder.Services.AddMudServices();
-
+ 
 string backendUrlLocal = builder.Configuration.GetValue<string>("DefaultConnectionWebApi");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(backendUrlLocal) });
@@ -30,11 +22,6 @@ builder.Services.AddSingleton<HubConnection>(sp =>
       .Build();
 });
 
-builder.Services.AddScoped<DataServiceEquipo>();
-builder.Services.AddScoped<DataServiceImagen>();
-builder.Services.AddScoped<DataServiceJugador>();
-builder.Services.AddScoped<DataServiceInscripcion>();
-builder.Services.AddScoped<DataServiceTorneo>();
-builder.Services.AddScoped<DataServiceHub>();
+builder.Services.AddScoped<DataServiceTorneoPartido>();
 
 await builder.Build().RunAsync();

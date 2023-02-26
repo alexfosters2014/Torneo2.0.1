@@ -61,6 +61,8 @@ namespace ViewModels
         public int Ronda { get; set; }
         public Guid Guid { get; set; }
         public bool RondaDescanso { get; set; }
+
+        public bool PartidaEnProceso { get; set; }
     }
 
 }

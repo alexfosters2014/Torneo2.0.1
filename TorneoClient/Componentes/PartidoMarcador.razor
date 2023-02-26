@@ -1,5 +1,9 @@
-﻿@inject IToastService toast;
+﻿@using Microsoft.AspNetCore.SignalR.Client;
+@inject IToastService toast;
 @inject DataServiceTorneo dataServiceTorneo
+@inject NavigationManager nav
+@inject HubConnection hubConnection
+@inject DataServiceHub dataServiceHub
 
 @if (Partido != null)
 {
@@ -30,7 +34,7 @@
         </div>
 
 
-        @if (PartidaEnProceso)
+        @if (Partido.PartidaEnProceso)
         {
            <div class="sep caja">
             <hr>
@@ -90,12 +94,14 @@
     public int PuntajeMaxDefinitorio { get; set; }
 
     [Parameter]
+    public int TorneoId { get; set; }
+
+    [Parameter]
     public EventCallback<ViewModelEquipoGanador> SiguientePartidoParaEquipoGanador { get; set; }
 
     private int setDiferencia = 0;
     private int puntajeMaximoSegunSet = 0;
 
-    private bool PartidaEnProceso = false;
     private bool EsconderIconoPlay = false;
     private bool ModalidadTantosPorDiferencia = false;
 
@@ -103,13 +109,14 @@
 
     private DateTime HorarioInicioPartido;
 
-    protected override void OnInitialized()
+    protected async override Task OnInitializedAsync()
     {
-        decimal mitadSetTotales = Math.Round(Convert.ToDecimal(SetsMax) / 2,2);
+        decimal mitadSetTotales = Math.Round(Convert.ToDecimal(SetsMax) / 2, 2);
         setDiferencia = (int)Math.Ceiling(mitadSetTotales);
 
         puntajeMaximoSegunSet = PuntajeMax;
         if (Partido.PuntajeLocal > 0 || Partido.PuntajeVisitante > 0) EsconderIconoPlay = true;
+        //await hubConnection.StartAsync();
     }
 
     private string ActualizarLinkImagen(string imagenRef)
@@ -126,9 +133,10 @@
     {
         if (Partido.Local != null && Partido.Visitante != null)
         {
-            PartidaEnProceso = true;
+            Partido.PartidaEnProceso = true;
             EsconderIconoPlay = true;
             ImagenPlay = "pelota.png";
+            await EnviarPartidoActualizadoATodosHub();
         }
         else
         {
@@ -136,7 +144,7 @@
         }
     }
 
-    private void AumentarMarcador(string tipoEquipo)
+    private async Task AumentarMarcador(string tipoEquipo)
     {
         if (tipoEquipo == "LOCAL")
         {
@@ -146,10 +154,11 @@
         {
             Partido.MarcadorVisitante += 1;
         }
-        VerificarFinalPorSet();
+        await EnviarPartidoActualizadoATodosHub();
+        await VerificarFinalPorSet();
     }
 
-    private void ResetearMarcador()
+    private async void ResetearMarcador()
     {
         Partido.HistorialPartido += $"[{Partido.MarcadorLocal}-{Partido.MarcadorVisitante}]  ";
         Partido.MarcadorLocal = 0;
@@ -157,9 +166,10 @@
         Partido.SetActual += 1;
         puntajeMaximoSegunSet = Partido.SetActual == SetsMax ? PuntajeMaxDefinitorio : PuntajeMax;
         ModalidadTantosPorDiferencia = false;
+        await EnviarPartidoActualizadoATodosHub();
     }
 
-    private void VerificarFinalPorSet()
+    private async Task VerificarFinalPorSet()
     {
 
         if (Partido.MarcadorLocal == puntajeMaximoSegunSet -1 && Partido.MarcadorVisitante == puntajeMaximoSegunSet - 1)
@@ -178,8 +188,10 @@
             if (diferenciaTantosLocal == 2 || diferenciaTantosVisitante == 2)
             {
                 ResetearMarcador();
-                VerificarFinalPartido();
+                await EnviarPartidoActualizadoATodosHub();
+                await VerificarFinalPartido();
             }
+            await EnviarPartidoActualizadoATodosHub();
             return;
         }
 
@@ -193,7 +205,7 @@
             Partido.SetsGanadosVisitante += 1;
             ResetearMarcador();
         }
-        VerificarFinalPartido();
+        await VerificarFinalPartido();
     }
 
     private async Task VerificarFinalPartido()
@@ -204,6 +216,7 @@
             Partido.PuntajeLocal = 1;
             TerminarPartido();
             await SiguientePartidoDeEquipo(Partido.Local);
+
             return;
         }
 
@@ -211,6 +224,7 @@
         {
             Partido.PuntajeVisitante = 1;
             TerminarPartido();
+            await EnviarPartidoActualizadoATodosHub();
             await SiguientePartidoDeEquipo(Partido.Visitante);
             return;
         }
@@ -227,17 +241,19 @@
                 Partido.PuntajeVisitante = 1;
                 await SiguientePartidoDeEquipo(Partido.Visitante);
             }
+            await EnviarPartidoActualizadoATodosHub();
             TerminarPartido();
         }
     }
 
-    private void TerminarPartido()
+    private async void TerminarPartido()
     {
-        PartidaEnProceso = false;
+        Partido.PartidaEnProceso = false;
         EsconderIconoPlay = true;
+        await EnviarPartidoActualizadoATodosHub();
     }
 
-    private void DecrementarMarcador(string tipoEquipo)
+    private async Task DecrementarMarcador(string tipoEquipo)
     {
         if (tipoEquipo == "LOCAL" && Partido.MarcadorLocal > 0)
         {
@@ -247,6 +263,7 @@
         {
             Partido.MarcadorVisitante -= 1;
         }
+        await EnviarPartidoActualizadoATodosHub();
     }
 
     async Task SiguientePartidoDeEquipo(EquipoVM equipoGanador)
@@ -266,6 +283,13 @@
         {
             toast.ShowWarning(ex.Message);
         }
-       
     }
+
+    private async Task EnviarPartidoActualizadoATodosHub()
+    {
+        await dataServiceHub.EnviarPartidoATodos(TorneoId, Partido);
+    }
+
+   
+
 }

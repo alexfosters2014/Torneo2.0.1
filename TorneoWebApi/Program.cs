@@ -61,7 +61,8 @@ app.MapEquiposEndpoints();
 app.MapTorneosEndpoints();
 
 app.UseRouting();
-app.UseEndpoints(endpoints => endpoints.MapHub<PartidoHub>("/partidohubs"));
+//app.UseEndpoints(endpoints => endpoints.MapHub<PartidoHub>("/partidohubs"));
+app.MapHub<PartidoHub>("/partidohubs");
 
 app.Run();
 

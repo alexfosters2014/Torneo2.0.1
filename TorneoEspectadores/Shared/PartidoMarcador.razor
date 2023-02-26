@@ -1,0 +1,81 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client;
+@inject NavigationManager nav
+@inject HubConnection hubConnection
+
+@if (Partido != null)
+{
+    <div class="gridContainer">
+        <div class="vis caja">
+            <p>@(Partido.Local != null ? Partido.Local.NombreEquipo : MensajeEsperandoContrincante())</p>
+            <img src="@(Partido.Local != null ? ActualizarLinkImagen(Partido.Local.Caratula) : EscudoVacio())" alt="">
+        </div>
+
+        <div class="puntV caja tamanioPuntaje">
+            <h3>@Partido.PuntajeLocal</h3>
+        </div>
+
+        <div class="medio caja">
+            <p class="gridContainerFecha">10/01/2023</p>
+            <p title="@Partido.HistorialPartido">VS</p>
+            <p>00:00</p>
+            <p>@Partido.NombreCancha</p>
+        </div>
+
+        <div class="puntL caja tamanioPuntaje">
+            <h3>@Partido.PuntajeVisitante</h3>
+        </div>
+
+        <div class="loc caja">
+            <p>@(Partido.Visitante != null ? Partido.Visitante.NombreEquipo : MensajeEsperandoContrincante())</p>
+            <img src="@(Partido.Visitante != null ? ActualizarLinkImagen(Partido.Visitante.Caratula) : EscudoVacio())" alt="">
+        </div>
+
+
+        @if (Partido.PartidaEnProceso)
+        {
+           <div class="sep caja">
+            <hr>
+        </div>
+
+        <div class="marcV caja">
+             <h2>@Partido.MarcadorLocal.ToString("00")</h2>
+            <MarcadorSetGanados CantidadSetGanados="Partido.SetsGanadosLocal" />
+        </div>
+
+        <div class="medioSet caja">
+            <h4>SET: @Partido.SetActual</h4>
+            <img src="/img/componentes/jugando.png" alt="jugando"/>
+        </div>
+
+        <div class="marcL caja">
+               
+                 <h2 >@Partido.MarcadorVisitante.ToString("00")</h2>
+                <MarcadorSetGanados CantidadSetGanados="Partido.SetsGanadosVisitante" />
+        </div>
+
+            <div class="pie">
+                <p>@Partido.HistorialPartido</p>
+            </div>
+            <EspacioHorizontal Altura="20px" />
+        }
+    </div>
+
+   <EspacioHorizontal Altura="15px" />
+}
+
+@code {
+    [Parameter]
+    public PartidoVM Partido { get; set; } = new();
+
+    private string ActualizarLinkImagen(string imagenRef)
+    {
+        return $"https://torneostorage.blob.core.windows.net/imagenesequipos/{imagenRef}";
+
+    }
+
+    private string EscudoVacio() => "/img/componentes/EscudoVacio.png";
+
+    private string MensajeEsperandoContrincante() => "Esperando...";
+
+
+}

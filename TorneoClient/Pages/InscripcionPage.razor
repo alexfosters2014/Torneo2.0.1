@@ -5,22 +5,18 @@
 @inject IToastService toast;
 
 
-<div class="tarjetaEquipoContainer">
+<div class="cardInscripcion">
     
-    <table>
+    <table class="">
         <tr>
-            <td>Selecciona tu equipo</td>
-            <td>@equipo.NombreEquipo</td>
-            <td><button @onclick="ShowBuscadorEquipo">Buscar</button></td>
+            <td style="color:dimgrey">Selecciona tu equipo:</td>
+            <td style="color:darkred">@equipo.NombreEquipo</td>
+            <td><button @onclick="ShowBuscadorEquipo" class="buttonStyle">Buscar</button></td>
         </tr>
-
-        <tr class="alturaEspecificaEquipo_tr"></tr>
         <tr>
-            <td>Selecciona el torneo</td>
-            <td colspan="3"></td>
-        </tr>
-            <td colspan="2" style="width:10vw">
-                    <select @onchange="CambioTorneo">
+            <td style="color:dimgrey">Selecciona el torneo</td>
+            <td colspan="2">
+                <select @onchange="CambioTorneo" style="color:darkred">
                                <option value="0" selected>Seleccionar un torneo</option>
                             @foreach (var torneo in torneosParaInscripcion)
                             {
@@ -28,6 +24,7 @@
                             }
                     </select>
             </td>
+        </tr>
     </table>
 
 </div>

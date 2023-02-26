@@ -13,11 +13,11 @@
 
               <table>
                 <tr>
-            <td style="width:10vw">Nombre de Equipo</td>
+            <td style="width:10vw;color:dimgrey">Nombre de Equipo</td>
                     <td colspan="2"><input type="text" @bind="Equipo.NombreEquipo"></td>
                 </tr>
         <tr>
-            <td>Tipo Torneo</td>
+            <td style="color:dimgrey">Tipo Torneo</td>
             <td colspan="2" style="width:10vw">
                 <select @onchange="CambioDeporte">
                         <option value="0" selected>Seleccionar un tipo de torneo</option>
@@ -31,7 +31,7 @@
 
         <tr class="alturaEspecificaEquipo_tr"></tr>
                 <tr>
-                    <td>Jugadores</td>
+                    <td style="color:dimgrey">Jugadores</td>
                     <td colspan="3"></td>
                 </tr>
         @foreach (var item in Equipo.Jugadores)

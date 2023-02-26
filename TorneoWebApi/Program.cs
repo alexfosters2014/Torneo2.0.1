@@ -3,8 +3,10 @@ using Entidades;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Negocio;
+using System;
 using TorneoWebApi.EndPoints;
 using TorneoWebApi.PartidoHub;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +51,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//creacion o acceso a la base de datos a traves de las migraciones
+using var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<TorneoContext>();
+dbContext.Database.Migrate();
 
 app.UseCors("cors");
 app.UseHttpsRedirection();

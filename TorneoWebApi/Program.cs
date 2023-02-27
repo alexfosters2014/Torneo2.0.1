@@ -27,7 +27,7 @@ builder.Services.AddCors(opciones => {
 
 builder.Services.AddDbContext<TorneoContext>(opciones =>
 {
-    opciones.UseSqlServer(builder.Configuration.GetConnectionString("LocalConnection"));
+    opciones.UseSqlServer(builder.Configuration.GetConnectionString("ProduccionConnection"));
 });
 
 builder.Services.AddSignalR();

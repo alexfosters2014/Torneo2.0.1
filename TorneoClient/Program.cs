@@ -17,7 +17,7 @@ builder.Services.AddBlazoredModal();
 builder.Services.AddBlazoredToast();
 builder.Services.AddMudServices();
 
-string backendUrlLocal = builder.Configuration.GetValue<string>("DefaultConnectionWebApi");
+string backendUrlLocal = builder.Configuration.GetValue<string>("ProductionConnection");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(backendUrlLocal) });
 
